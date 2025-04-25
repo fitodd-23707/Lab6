@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include  <avr/interrupt.h>
+#define F_CPU 16000000
 
 void setup();
 void initUART();
@@ -15,7 +16,7 @@ void writeChar(char caracter);
 int main(void)
 {
 	setup();
-	writeChar();
+	writeChar('h');
     while (1) 
     {
     }
@@ -26,6 +27,7 @@ void setup(){
 	cli();
 	
 	initUART();
+	DDRB = 0xFF;
 	
 	sei();
 }
@@ -35,7 +37,7 @@ void initUART(){
 	DDRD |= (1 << DDD1);
 	DDRD &= ~(1 << DDD0);
 	
-	UCSR0A = 0
+	UCSR0A = 0;
 	
 	UCSR0B |= (1 << RXCIE0) | (1 << RXEN0) | (1 << TXEN0);
 	
@@ -48,4 +50,13 @@ void writeChar(char caracter){
 	
 	while ((UCSR0A & (1 << UDRE0)) == 0);
 	UDR0 = caracter;
+
+}
+
+ISR(USART_RX_vect){
+	
+	char temp = UDR0;
+	writeChar('r');
+	PORTB = temp;
+	
 }
