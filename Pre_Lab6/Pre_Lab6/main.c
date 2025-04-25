@@ -12,6 +12,7 @@
 void setup();
 void initUART();
 void writeChar(char caracter);
+void initADC();
 
 int main(void)
 {
@@ -27,6 +28,10 @@ void setup(){
 	cli();
 	
 	initUART();
+	initADC();
+	
+	ADCSRA |= (1 << ADSC);
+	
 	DDRB = 0xFF;
 	
 	sei();
@@ -46,6 +51,15 @@ void initUART(){
 	UBRR0 = 103;
 }
 
+void initADC(){
+	
+	ADMUX = 0;
+	ADMUX |= (1 << REFS0) | (1 << ADLAR);
+	
+	ADCSRA = 0;
+	ADCSRA = (1 << ADPS1) | (1 << ADPS0) | (1 << ADIE) | (1 << ADEN);
+}
+
 void writeChar(char caracter){
 	
 	while ((UCSR0A & (1 << UDRE0)) == 0);
@@ -59,4 +73,10 @@ ISR(USART_RX_vect){
 	writeChar('r');
 	PORTB = temp;
 	
+}
+
+ISR(ADC_vect){
+	char ent = ADCH;
+	writeChar(ent);
+	ADCSRA |= (1 << ADSC);
 }
