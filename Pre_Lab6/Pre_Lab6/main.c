@@ -3,6 +3,7 @@
  *
  * Created: 25/04/2025 09:49:33
  * Author : Arnulfo Díaz
+ * Link Github : https://github.com/fitodd-23707/Lab6
  */ 
 
 #include <avr/io.h>
@@ -12,6 +13,7 @@
 void setup();
 void initUART();
 void writeChar(char caracter);
+void write_str(char* texto);
 void initADC();
 
 int main(void)
@@ -67,16 +69,23 @@ void writeChar(char caracter){
 
 }
 
+void write_str(char* texto)
+{
+	for(uint8_t i = 0; *(texto+i) != 'ÿ'; i++)
+	{
+		writeChar(*(texto+i));
+	}
+}
+
 ISR(USART_RX_vect){
 	
 	char temp = UDR0;
-	writeChar('r');
 	PORTB = temp;
 	
 }
 
 ISR(ADC_vect){
 	char ent = ADCH;
-	writeChar(ent);
+	write_str(ent);
 	ADCSRA |= (1 << ADSC);
 }
